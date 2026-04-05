@@ -1,0 +1,12 @@
+{
+  "slug": "clinica-dental-lumia",
+  "nombre": "Clínica Dental Lumia",
+  "tipo": "dental_clinic",
+  "es_demo": true,
+  "pasos_hechos": [],
+  "pasos_meta": {},
+  "sanity_project_id": null,
+  "github_repo": null,
+  "vercel_project_id": null,
+  "deploy_url": null
+}

@@ -1,0 +1,183 @@
+---
+import { cliente } from '../data/cliente.js';
+
+const { title, description, ogImage } = Astro.props;
+const pageTitle       = title       || cliente.seo.title;
+const pageDescription = description || cliente.seo.description;
+const pageOgImage     = ogImage     || cliente.seo.ogImage;
+---
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={pageDescription} />
+  <meta property="og:title"       content={pageTitle} />
+  <meta property="og:description" content={pageDescription} />
+  <meta property="og:image"       content={pageOgImage} />
+  <meta property="og:type"        content="website" />
+  <meta name="theme-color"        content="#0ea5e9" />
+  <title>{pageTitle}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style is:global>
+    /* ── CSS Tokens ─────────────────────────────────────────────────── */
+    :root {
+      --brand-50:   #f0f9ff;
+      --brand-100:  #e0f2fe;
+      --brand-200:  #bae6fd;
+      --brand-300:  #7dd3fc;
+      --brand-400:  #38bdf8;
+      --brand-500:  #0ea5e9;
+      --brand-600:  #0284c7;
+      --brand-700:  #0369a1;
+      --brand-800:  #075985;
+      --brand-900:  #0c4a6e;
+      --brand-950:  #082f49;
+
+      --accent:       #059669;
+      --accent-light: #d1fae5;
+      --accent-dark:  #065f46;
+
+      --surface:          #ffffff;
+      --surface-raised:   #f8fafc;
+      --surface-overlay:  #f1f5f9;
+
+      --text:         #0f172a;
+      --text-muted:   #64748b;
+      --text-inverse: #ffffff;
+
+      --border:  #e2e8f0;
+      --radius:  0.75rem;
+
+      --font-display: 'Inter';
+      --font-body:    'Inter';
+      --font-mono:    'ui-monospace';
+    }
+
+    /* ── Reset base ──────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body), system-ui, sans-serif;
+      color: var(--text);
+      background: var(--surface);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    img { max-width: 100%; height: auto; display: block; }
+    a   { color: inherit; text-decoration: none; }
+    button { cursor: pointer; border: none; background: none; font: inherit; }
+
+    /* ── Sistema de animaciones de scroll ───────────────────────────── */
+    @media (prefers-reduced-motion: no-preference) {
+
+      /* Estado inicial — invisible */
+      .anim, .anim-fade, .anim-left, .anim-right, .anim-scale {
+        opacity: 0;
+        will-change: transform, opacity;
+        transition: opacity 0.6s ease, transform 0.6s ease;
+      }
+      .anim        { transform: translateY(28px); }
+      .anim-fade   { transform: none; }
+      .anim-left   { transform: translateX(-36px); }
+      .anim-right  { transform: translateX(36px); }
+      .anim-scale  { transform: scale(0.93); }
+
+      /* Hijos de anim-children también empiezan invisibles */
+      .anim-children > * {
+        opacity: 0;
+        transform: translateY(24px);
+        will-change: transform, opacity;
+        transition:
+          opacity  0.55s ease,
+          transform 0.55s ease;
+      }
+
+      /* Delay escalonado basado en --i (asignado por JS si no está en HTML) */
+      .anim-children > *.in {
+        opacity: 1;
+        transform: none;
+      }
+
+      /* Estado activo — visible */
+      .anim.in, .anim-fade.in, .anim-left.in, .anim-right.in, .anim-scale.in {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* Sin animaciones en modo reducido */
+    @media (prefers-reduced-motion: reduce) {
+      .anim, .anim-fade, .anim-left, .anim-right, .anim-scale,
+      .anim-children > * {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+    }
+
+    /* ── Hover globales ──────────────────────────────────────────────── */
+    .card-hover {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+    }
+    .img-zoom {
+      overflow: hidden;
+    }
+    .img-zoom img {
+      transition: transform 0.4s ease;
+    }
+    .img-zoom:hover img {
+      transform: scale(1.05);
+    }
+    .btn-hover {
+      transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+
+<body>
+  <slot />
+
+  <script>
+    // IntersectionObserver para animaciones de scroll
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -48px 0px' }
+    );
+
+    // Observar elementos con clases de animación individuales
+    document.querySelectorAll('.anim, .anim-fade, .anim-left, .anim-right, .anim-scale')
+      .forEach((el) => observer.observe(el));
+
+    // Observar hijos de anim-children individualmente con micro-delay
+    document.querySelectorAll('.anim-children').forEach((container) => {
+      Array.from(container.children).forEach((child, i) => {
+        const delay = child.style.getPropertyValue('--i')
+          ? parseInt(child.style.getPropertyValue('--i')) * 50
+          : i * 80;
+        child.style.transitionDelay = `${delay}ms`;
+        observer.observe(child);
+      });
+    });
+  </script>
+</body>
+</html>
