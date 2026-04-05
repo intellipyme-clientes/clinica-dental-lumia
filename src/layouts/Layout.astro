@@ -73,44 +73,42 @@ const pageOgImage     = ogImage     || cliente.seo.ogImage;
     button { cursor: pointer; border: none; background: none; font: inherit; }
 
     /* ── Sistema de animaciones de scroll ───────────────────────────── */
-    @media (prefers-reduced-motion: no-preference) {
 
-      /* Estado inicial — invisible */
+    /* Estado inicial — siempre oculto (independiente de prefers-reduced-motion) */
+    .anim, .anim-fade, .anim-left, .anim-right, .anim-scale {
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+    .anim        { transform: translateY(28px); }
+    .anim-fade   { transform: none; }
+    .anim-left   { transform: translateX(-36px); }
+    .anim-right  { transform: translateX(36px); }
+    .anim-scale  { transform: scale(0.93); }
+
+    .anim-children > * {
+      opacity: 0;
+      transform: translateY(24px);
+      will-change: transform, opacity;
+    }
+
+    /* Transición animada (usuarios normales) */
+    @media (prefers-reduced-motion: no-preference) {
       .anim, .anim-fade, .anim-left, .anim-right, .anim-scale {
-        opacity: 0;
-        will-change: transform, opacity;
         transition: opacity 0.6s ease, transform 0.6s ease;
       }
-      .anim        { transform: translateY(28px); }
-      .anim-fade   { transform: none; }
-      .anim-left   { transform: translateX(-36px); }
-      .anim-right  { transform: translateX(36px); }
-      .anim-scale  { transform: scale(0.93); }
-
-      /* Hijos de anim-children también empiezan invisibles */
       .anim-children > * {
-        opacity: 0;
-        transform: translateY(24px);
-        will-change: transform, opacity;
-        transition:
-          opacity  0.55s ease,
-          transform 0.55s ease;
-      }
-
-      /* Delay escalonado basado en --i (asignado por JS si no está en HTML) */
-      .anim-children > *.in {
-        opacity: 1;
-        transform: none;
-      }
-
-      /* Estado activo — visible */
-      .anim.in, .anim-fade.in, .anim-left.in, .anim-right.in, .anim-scale.in {
-        opacity: 1;
-        transform: none;
+        transition: opacity 0.55s ease, transform 0.55s ease;
       }
     }
 
-    /* Sin animaciones en modo reducido */
+    /* Estado activo — visible */
+    .anim.in, .anim-fade.in, .anim-left.in, .anim-right.in, .anim-scale.in,
+    .anim-children > *.in {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Accesibilidad: mostrar todo instantáneamente si prefiere sin movimiento */
     @media (prefers-reduced-motion: reduce) {
       .anim, .anim-fade, .anim-left, .anim-right, .anim-scale,
       .anim-children > * {
